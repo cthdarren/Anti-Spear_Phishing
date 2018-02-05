@@ -98,7 +98,7 @@ namespace AbsSecure_V1._2
                         try
                         {
                             var resp = await client.PostAsync(new Uri("http://evocreate.tk/sendNormalMail.php"), encodedInput);
-                        displayBox.Text = resp.Content.ToString();
+                            displayBox.Text = resp.Content.ToString();
                             if (resp.StatusCode.Equals(HttpStatusCode.Ok))
                                 DisplayDialog("Success!", "Normal email sent sucessfully!");
                             else
@@ -311,5 +311,5 @@ namespace AbsSecure_V1._2
         //{
         //    mail();
         //}
-}
+    }
 }
