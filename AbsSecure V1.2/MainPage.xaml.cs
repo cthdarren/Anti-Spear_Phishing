@@ -58,46 +58,62 @@ namespace AbsSecure_V1._2
 
         private async void ASend_Click(object sender, RoutedEventArgs e)
         {
-            string encrypted = "";
-            displayBox.Text = "";
-            byte[] stringtoEncrypt = Encoding.BigEndianUnicode.GetBytes(emailContent.Text);
+            //string encrypted = "";
+            //displayBox.Text = "";
+            //byte[] stringtoEncrypt = Encoding.BigEndianUnicode.GetBytes(emailContent.Text);
 
-            AesEnDecryption test = new AesEnDecryption();
-            byte[] bytea = test.Encrypt(stringtoEncrypt);
-            string res = Encoding.BigEndianUnicode.GetString(bytea);
-            encrypted = res;
-            displayBox.Text += @"Encrypted: " + res;
-            bytea = test.Decrypt(bytea);
-            res = Encoding.BigEndianUnicode.GetString(bytea);
-            displayBox.Text += "\n\nDecrypted: " + res;
+            //AesEnDecryption test = new AesEnDecryption();
+            //byte[] bytea = test.Encrypt(stringtoEncrypt);
+            //string res = Encoding.BigEndianUnicode.GetString(bytea);
+            //encrypted = res;
+            //displayBox.Text += @"Encrypted: " + res;
+            //bytea = test.Decrypt(bytea);
+            //res = Encoding.BigEndianUnicode.GetString(bytea);
+            //displayBox.Text += "\n\nDecrypted: " + res;
 
-            string emailHash = findHash(emailContent.Text);
-            displayBox.Text += "\n\nEmail Hash: " + emailHash;
+            //string emailHash = findHash(emailContent.Text);
+            //displayBox.Text += "\n\nEmail Hash: " + emailHash;
 
-            using (HttpClient client = new HttpClient())
+            if (senderEmail.Text != "" && recpEmail.Text != "" && emailSubj.Text != "" && emailContent.Text != "")
             {
-                var input = new Dictionary<string, string>
+                if (isAbsSecureEnabled)
+                {
+
+                }
+                else
+                {
+                    using (HttpClient client = new HttpClient())
                     {
-                    { "email", emailHash },
-                    { "password", encrypted }
+                        var input = new Dictionary<string, string>
+                    {
+                    { "senderEmail", senderEmail.Text },
+                    { "recipientEmail", recpEmail.Text },
+                    { "subject", emailSubj.Text },
+                    { "emailContent", emailContent.Text },
+                    { "senderEmpID", empID },
+                    { "attachment", attachmentContent.Text }
                     };
 
-                var encodedInput = new HttpFormUrlEncodedContent(input);
-                try
-                {
-                    var resp = await client.PostAsync(new Uri("http://evocreate.tk/processPHP.php"), encodedInput);
-                }
-                catch (Exception)
-                {
-
+                        var encodedInput = new HttpFormUrlEncodedContent(input);
+                        try
+                        {
+                            var resp = await client.PostAsync(new Uri("http://evocreate.tk/sendNormalMail.php"), encodedInput);
+                        displayBox.Text = resp.Content.ToString();
+                            if (resp.StatusCode.Equals(HttpStatusCode.Ok))
+                                DisplayDialog("Success!", "Normal email sent sucessfully!");
+                            else
+                                DisplayDialog("Failed!", "Email was not sent!");
+                        }
+                        catch (Exception)
+                        {
+                            DisplayDialog("Error!", "Please ensure you have internet connectivity!");
+                        }
+                    }
                 }
             }
+
+
         }
-        //public string Encrypt(string str)
-        //{
-        //    Aes aes = Aes.Create();
-        //    return BitConverter.ToString(aes.Co)
-        //}
 
         public async void Authentication(string u, string p)
         {
@@ -128,6 +144,7 @@ namespace AbsSecure_V1._2
                         empID = tmpList[1];
                         companyID = tmpList[2];
                         clientInfoText.Text = $"Welcome, {empName}, EmpID: ({empID}), CompanyID: ({companyID})";
+                        senderEmail.Text = email;
                     }
                     else if (resp.StatusCode.Equals(HttpStatusCode.Forbidden))
                     {
