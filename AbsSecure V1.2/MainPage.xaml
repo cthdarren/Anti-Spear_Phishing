@@ -8,6 +8,21 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-
+        <ListView x:Name="emailView" HorizontalAlignment="Left" Height="601" Margin="38,103,0,0" VerticalAlignment="Top" Width="619" BorderThickness="1" BorderBrush="Black" Visibility="Collapsed"/>
+        <TextBlock x:Name="displayBox" HorizontalAlignment="Left" Margin="687,78,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="215" Width="553" Visibility="Collapsed"/>
+        <TextBox x:Name="senderEmail" HorizontalAlignment="Left" Margin="687,330,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="553" PlaceholderText="Enter your email (Return Address)" Visibility="Collapsed"/>
+        <TextBox x:Name="recpEmail" HorizontalAlignment="Left" Margin="687,367,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="553" PlaceholderText="Enter Receipients Email" Visibility="Collapsed"/>
+        <TextBox x:Name="emailSubj" HorizontalAlignment="Left" Margin="687,412,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="553" PlaceholderText="Enter Subject" Visibility="Collapsed"/>
+        <TextBox x:Name="emailContent" HorizontalAlignment="Left" Margin="687,469,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="553" PlaceholderText="Enter Email Contents" Height="164" Visibility="Collapsed"/>
+        <Button x:Name="receiveButton" Content="Receive Mails" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="550,41,0,0" Height="41" Width="146" Visibility="Collapsed" Click="receiveButton_Click"/>
+        <Button x:Name="sendButton" Content="Send" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="1094,671,0,0" Height="41" Width="146" Visibility="Collapsed" Click="ASend_Click"/>
+        <TextBlock x:Name="clientInfoText" HorizontalAlignment="Left" Margin="38,54,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" FontWeight="Bold" FontSize="15" FontFamily="Tw Cen MT Condensed Extra Bold" Visibility="Collapsed"/>
+        <TextBlock x:Name="loginText" HorizontalAlignment="Left" Margin="394,203,0,0" TextWrapping="Wrap" Text="AbsSecure Mail Client Login" VerticalAlignment="Top" FontSize="36" FontWeight="Bold" FocusVisualPrimaryBrush="Red" Foreground="Red"/>
+        <TextBox x:Name="clientEmail" HorizontalAlignment="Left" Margin="394,294,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="323" PlaceholderText="Email Address"/>
+        <PasswordBox x:Name="clientPassword" HorizontalAlignment="Left" Margin="394,348,0,0" VerticalAlignment="Top" Width="323" PlaceholderText="Password"/>
+        <Button x:Name="loginButton" Content="Login" HorizontalAlignment="Left" Margin="394,405,0,0" VerticalAlignment="Top" FontWeight="Bold" Click="loginButton_Click"/>
+        <Button x:Name="logOutButton" Content="Logout" HorizontalAlignment="Left" Margin="1146,26,0,0" VerticalAlignment="Top" FontWeight="Bold" Click="logOutButton_Click" Visibility="Collapsed"/>
+        <TextBox x:Name="attachmentContent" HorizontalAlignment="Left" Margin="687,651,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" PlaceholderText="Attachment" Visibility="Collapsed"/>
+        <ToggleButton x:Name="AbsSecureBtn" Content="ToggleAbsSecure" HorizontalAlignment="Left" Margin="968,26,0,0" VerticalAlignment="Top" FontWeight="Bold" Checked="AbsSecureBtn_Checked" Visibility="Collapsed"/>
     </Grid>
 </Page>
