@@ -110,7 +110,6 @@ namespace AbsSecure_V1._2
                             input["option"] = "2";
                             encodedInput = new HttpFormUrlEncodedContent(input);
                             var resp2 = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
-                            displayBox.Text = resp2.StatusCode.ToString();
                             input["option"] = "3";
                             encodedInput = new HttpFormUrlEncodedContent(input);
                             var resp3 = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
@@ -187,7 +186,6 @@ namespace AbsSecure_V1._2
                         try
                         {
                             var resp = await client.PostAsync(new Uri("http://evocreate.tk/sendNormalMail.php"), encodedInput);
-                            displayBox.Text = resp.Content.ToString();
                             if (resp.StatusCode.Equals(HttpStatusCode.Ok))
                                 DisplayDialog("Success!", "Normal email sent sucessfully!");
                             else
@@ -376,10 +374,6 @@ namespace AbsSecure_V1._2
             }
         }
 
-        private void AbsSecureBtn_Checked(object sender, RoutedEventArgs e)
-        {
-            isAbsSecureEnabled = !(isAbsSecureEnabled);
-        }
 
         public async void showEmail(string content)
         {
@@ -487,6 +481,11 @@ namespace AbsSecure_V1._2
                     DisplayDialog("Error", "Ensure that you have internet connectivity!");
                 }
             }
+        }
+
+        private void AbsSecureBtn_Click(object sender, RoutedEventArgs e)
+        {
+            isAbsSecureEnabled = !isAbsSecureEnabled;
         }
     }
 }
