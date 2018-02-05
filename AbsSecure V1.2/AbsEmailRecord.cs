@@ -12,10 +12,35 @@ namespace AbsSecure_V1._2
         private string senderName;
         private string recipientEmail;
         private string subject;
-        private string emailContent;
         private string dateTimeLog;
+
+
         private string absUID;
-        private bool isAbsSecureVerified = false;
+
+        public string AbsUID
+        {
+            get { return absUID; }
+            set { absUID = value; }
+        }
+
+
+        private bool isAbsSecureVerified;
+
+        public bool IsAbsSecureVerified
+        {
+            get { return isAbsSecureVerified; }
+            set { isAbsSecureVerified = value; }
+        }
+
+        private string emailContent;
+
+        public string EmailContent
+        {
+            get { return emailContent; }
+            set { emailContent = value; }
+        }
+
+
 
 
         public AbsEmailRecord(string se, string sn, string re, string s, string ec, string dtl, bool isasv, string a = "")

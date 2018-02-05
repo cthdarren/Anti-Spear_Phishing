@@ -42,6 +42,8 @@ namespace AbsSecure_V1._2
 
         bool isAbsSecureEnabled = false;
 
+        AbsEmailRecord currentEmail;
+
         List<AbsEmailRecord> allEmails;
 
 
@@ -117,7 +119,7 @@ namespace AbsSecure_V1._2
                                 DisplayDialog("ERROR!", "Your corporation is not associated with the recipient!");
                                 return;
                             }
-                                
+
                         }
                         catch (Exception)
                         {
@@ -153,7 +155,7 @@ namespace AbsSecure_V1._2
                             {
                                 DisplayDialog("Success!", $"Received AbsUID from Server:\n{absMailUID}\n\n Your email has been encrypted and sent to the recipient!");
                             });
-   
+
                             input.Add("absMailUID", absMailUID);
                             encodedInput = new HttpFormUrlEncodedContent(input);
                             var resp = await client.PostAsync(new Uri("http://evocreate.tk/sendAbsSecureMail.php"), encodedInput);
@@ -397,7 +399,18 @@ namespace AbsSecure_V1._2
             if (emailView.SelectedItem != null)
             {
                 AbsEmailRecord aer = (AbsEmailRecord)emailView.SelectedItem;
-                showEmail(aer.showFullContent());
+                if (!(aer.IsAbsSecureVerified))
+                    showEmail(aer.showFullContent());
+                else
+                {
+                    currentEmail = aer;
+                    HideUnhideEverything(false);
+                    goBackBtn.Visibility = Visibility.Visible;
+                    emailTxtBlock.Visibility = Visibility.Visible;
+                    integCheckBtn.Visibility = Visibility.Visible;
+                    decryptBtn.Visibility = Visibility.Visible;
+                    emailTxtBlock.Text = aer.showFullContent();
+                }
             }
         }
 
@@ -407,6 +420,80 @@ namespace AbsSecure_V1._2
             IBuffer hashed = hap.HashData(CryptographicBuffer.ConvertStringToBinary(tbh, BinaryStringEncoding.Utf8));
             return CryptographicBuffer.EncodeToHexString(hashed).ToUpper();
 
+        }
+
+        private void goBackBtn_Click(object sender, RoutedEventArgs e)
+        {
+            emailTxtBlock.Text = "";
+            goBackBtn.Visibility = Visibility.Collapsed;
+            emailTxtBlock.Visibility = Visibility.Collapsed;
+            integCheckBtn.Visibility = Visibility.Collapsed;
+            decryptBtn.Visibility = Visibility.Collapsed;
+            HideUnhideEverything(true);
+        }
+
+        private void changeContentBtn_Click(object sender, RoutedEventArgs e)
+        {
+            currentEmail.EmailContent = getSHA256Hash(DateTime.Now.ToString());
+        }
+
+        private async void integCheckBtn_Click(object sender, RoutedEventArgs e)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var input = new Dictionary<string, string>
+                    {
+                    { "option", "1" },
+                    { "emailHash", getSHA256Hash(currentEmail.EmailContent) },
+                    { "absMailUID", currentEmail.AbsUID }
+                    };
+
+                var encodedInput = new HttpFormUrlEncodedContent(input);
+                try
+                {
+                    var resp = await client.PostAsync(new Uri("http://evocreate.tk/receivingEndValidation.php"), encodedInput);
+                    if (resp.StatusCode.Equals(HttpStatusCode.Accepted))
+                        DisplayDialog("Success", "Email content has not been tampered with.");
+                    else
+                        DisplayDialog("Failure", "Email content has been tampered with. Delete it.");
+                }
+                catch (Exception)
+                {
+                    DisplayDialog("Error", "Ensure that you have internet connectivity!");
+                }
+            }
+        }
+
+        private async void decryptBtn_Click(object sender, RoutedEventArgs e)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var input = new Dictionary<string, string>
+                    {
+                    { "option", "2" },
+                    { "absMailUID", currentEmail.AbsUID }
+                    };
+
+                var encodedInput = new HttpFormUrlEncodedContent(input);
+                //try
+                //{
+                    var resp = await client.PostAsync(new Uri("http://evocreate.tk/receivingEndValidation.php"), encodedInput);
+                string symmKey = resp.Content.ToString();
+                //displayBox.Text = symmKey;
+                //string currentContent = currentEmail.EmailContent;
+                //AesEnDecryption mediumObj = new AesEnDecryption(symmKey);
+                //string check = mediumObj.AES_Key;
+                //byte[] decryptedBytes = mediumObj.Decrypt(Encoding.BigEndianUnicode.GetBytes(currentContent));
+                //string decryptedText = Encoding.BigEndianUnicode.GetString(decryptedBytes);
+
+                currentEmail.EmailContent = Encoding.BigEndianUnicode.GetString(new AesEnDecryption(symmKey).Decrypt(Encoding.BigEndianUnicode.GetBytes(currentEmail.EmailContent)));
+                emailTxtBlock.Text = currentEmail.showFullContent();
+                //}
+                //catch (Exception)
+                //{
+                //    DisplayDialog("Error", "Ensure that you have internet connectivity!");
+                //}
+            }
         }
     }
 }

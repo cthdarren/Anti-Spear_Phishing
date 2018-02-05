@@ -24,5 +24,12 @@
         <Button x:Name="logOutButton" Content="Logout" HorizontalAlignment="Left" Margin="1146,26,0,0" VerticalAlignment="Top" FontWeight="Bold" Click="logOutButton_Click" Visibility="Collapsed"/>
         <TextBox x:Name="attachmentContent" HorizontalAlignment="Left" Margin="687,651,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" PlaceholderText="Attachment" Visibility="Collapsed"/>
         <ToggleButton x:Name="AbsSecureBtn" Content="ToggleAbsSecure" HorizontalAlignment="Left" Margin="968,26,0,0" VerticalAlignment="Top" FontWeight="Bold" Checked="AbsSecureBtn_Checked" Visibility="Collapsed"/>
+        <TextBlock x:Name="emailTxtBlock" HorizontalAlignment="Left" Margin="454,103,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="778" Width="640" FontSize="25" FontFamily="Segoe UI Semibold" FontWeight="Bold" Visibility="Collapsed"/>
+        <Button x:Name="integCheckBtn" Content="Integrity Check" HorizontalAlignment="Left" Margin="1146,147,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Visibility="Collapsed" Click="integCheckBtn_Click"/>
+        <Button x:Name="decryptBtn" Content="Decrypt Content" HorizontalAlignment="Left" Margin="1146,212,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Visibility="Collapsed" Click="decryptBtn_Click"/>
+        <Button x:Name="goBackBtn" Content="Go Back" HorizontalAlignment="Left" Margin="286,147,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Click="goBackBtn_Click" Visibility="Collapsed"/>
+        <Button x:Name="changeContentBtn" Content="Change Content" HorizontalAlignment="Left" Margin="1146,398,0,0" VerticalAlignment="Top" FontWeight="Bold" FontSize="20" Click="changeContentBtn_Click" Visibility="Collapsed"/>
+        <TextBlock x:Name="debug" HorizontalAlignment="Left" Margin="1089,772,0,0" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Top"/>
+
     </Grid>
 </Page>

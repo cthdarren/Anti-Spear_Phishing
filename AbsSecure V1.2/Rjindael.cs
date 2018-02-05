@@ -19,12 +19,20 @@ namespace AbsSecure_V1._2
 
         public AesEnDecryption()
         {
-
             IBuffer key = Convert.FromBase64String(AES_Key).AsBuffer();
             m_iv = Convert.FromBase64String(AES_IV).AsBuffer();
             SymmetricKeyAlgorithmProvider provider = SymmetricKeyAlgorithmProvider.OpenAlgorithm(SymmetricAlgorithmNames.AesCbcPkcs7);
             m_key = provider.CreateSymmetricKey(key);
         }
+        public AesEnDecryption(string aes_key)
+        {
+            AES_Key = aes_key;
+            IBuffer key = Convert.FromBase64String(AES_Key).AsBuffer();
+            m_iv = Convert.FromBase64String(AES_IV).AsBuffer();
+            SymmetricKeyAlgorithmProvider provider = SymmetricKeyAlgorithmProvider.OpenAlgorithm(SymmetricAlgorithmNames.AesCbcPkcs7);
+            m_key = provider.CreateSymmetricKey(key);
+        }
+
 
         public byte[] Encrypt(byte[] input)
         {
