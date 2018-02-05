@@ -13,17 +13,24 @@ namespace AbsSecure_V1._2
         private string subject;
         private string emailContent;
         private string dateTimeLog;
-        private string attachment;
+        private string absUID;
+        private bool isAbsSecureVerified;
 
 
-        public AbsEmailRecord(string se, string re, string s, string ec, string dtl, string a = "")
+        public AbsEmailRecord(string se, string re, string s, string ec, string dtl, string a = "", bool isasv = false)
         {
             senderEmail = se;
             recipientEmail = re;
             subject = s;
             emailContent = ec;
             dateTimeLog = dtl;
-            attachment = a;
+            absUID = a;
+            isAbsSecureVerified = isasv;
+        }
+
+        public string showFullContent()
+        {
+            return $"Sender: {senderEmail}\nSubject: {subject}\n\n\n{emailContent} \n\nRegards,\nFag";
         }
 
         public override string ToString()

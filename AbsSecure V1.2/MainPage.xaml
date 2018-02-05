@@ -8,7 +8,7 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <ListView x:Name="emailView" HorizontalAlignment="Left" Height="601" Margin="38,103,0,0" VerticalAlignment="Top" Width="619" BorderThickness="1" BorderBrush="Black" Visibility="Collapsed"/>
+        <ListView x:Name="emailView" HorizontalAlignment="Left" Height="601" Margin="38,103,0,0" VerticalAlignment="Top" Width="619" BorderThickness="1" BorderBrush="Black" Visibility="Collapsed" ScrollViewer.HorizontalScrollMode="Enabled" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.IsHorizontalRailEnabled="True" Tapped="emailView_Tapped"/>
         <TextBlock x:Name="displayBox" HorizontalAlignment="Left" Margin="687,78,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="215" Width="553" Visibility="Collapsed"/>
         <TextBox x:Name="senderEmail" HorizontalAlignment="Left" Margin="687,330,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="553" PlaceholderText="Enter your email (Return Address)" Visibility="Collapsed"/>
         <TextBox x:Name="recpEmail" HorizontalAlignment="Left" Margin="687,367,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="553" PlaceholderText="Enter Receipients Email" Visibility="Collapsed"/>

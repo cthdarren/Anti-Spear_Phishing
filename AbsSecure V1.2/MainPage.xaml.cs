@@ -36,6 +36,7 @@ namespace AbsSecure_V1._2
         string empID = "";
         string companyID = "";
         string email = "";
+        string recipCompanyID = "";
 
         bool isAbsSecureEnabled = false;
 
@@ -79,6 +80,75 @@ namespace AbsSecure_V1._2
                 if (isAbsSecureEnabled)
                 {
 
+                    using (HttpClient client = new HttpClient())
+                    {
+                        var input = new Dictionary<string, string>
+                    {
+                    { "option", "1" },
+                    { "recipEmail", recpEmail.Text},
+                    { "senderCompanyID", companyID}
+                    };
+
+                        var encodedInput = new HttpFormUrlEncodedContent(input);
+                        try
+                        {
+                            var resp = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
+                            displayBox.Text = resp.Content.ToString();
+
+
+                            if (resp.StatusCode.Equals(HttpStatusCode.BadRequest))
+                            {
+                                DisplayDialog("Error!", "Recipient is not a client of AbsSecure!");
+                                return;
+                            }
+                            else
+                                recipCompanyID = resp.Content.ToString();
+                            input.Add("recipCompanyID", recipCompanyID);
+                            input["option"] = "2";
+                            encodedInput = new HttpFormUrlEncodedContent(input);
+                            var resp2 = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
+                            input["option"] = "3";
+                            encodedInput = new HttpFormUrlEncodedContent(input);
+                            var resp3 = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
+                            if (!(resp2.StatusCode.Equals(HttpStatusCode.Accepted)) && !(resp3.StatusCode.Equals(HttpStatusCode.Accepted)))
+                            {
+                                DisplayDialog("ERROR!", "Your corporation is not associated with the recipient!");
+                                return;
+                            }
+                                
+                        }
+                        catch (Exception)
+                        {
+                            DisplayDialog("Error!", "Ensure that you have internet connectivity!");
+                        }
+                    }
+
+                    AesEnDecryption mediumObj = new AesEnDecryption();
+                    string encryptedContent = Encoding.BigEndianUnicode.GetString(mediumObj.Encrypt(Encoding.BigEndianUnicode.GetBytes(emailContent.Text)));
+                    using (HttpClient client = new HttpClient())
+                    {
+                        var input = new Dictionary<string, string>
+                    {
+                    { "senderEmail", senderEmail.Text },
+                    { "recipientEmail", recpEmail.Text },
+                    { "subject", emailSubj.Text },
+                    { "emailContent", encryptedContent },
+                    { "senderEmpID", empID },
+                    { "symmKey", mediumObj.AES_Key },
+                    { "emailHash", getSHA256Hash(encryptedContent)},
+                    { "absMailUID", getSHA256Hash(DateTime.Now.ToString()) }
+                    };
+
+                        var encodedInput = new HttpFormUrlEncodedContent(input);
+                        try
+                        {
+                            var resp = await client.PostAsync(new Uri("http://evocreate.tk/sendAbsSecureMail.php"), encodedInput);
+                        }
+                        catch (Exception)
+                        {
+                            DisplayDialog("Error!", "Ensure that you have internet connectivity!");
+                        }
+                    }
                 }
                 else
                 {
@@ -89,9 +159,7 @@ namespace AbsSecure_V1._2
                     { "senderEmail", senderEmail.Text },
                     { "recipientEmail", recpEmail.Text },
                     { "subject", emailSubj.Text },
-                    { "emailContent", emailContent.Text },
-                    { "senderEmpID", empID },
-                    { "attachment", attachmentContent.Text }
+                    { "emailContent", emailContent.Text }
                     };
 
                         var encodedInput = new HttpFormUrlEncodedContent(input);
@@ -212,9 +280,7 @@ namespace AbsSecure_V1._2
         {
             if (clientEmail.Text != "" && clientPassword.Password != "")
             {
-                HashAlgorithmProvider hap = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha256);
-                IBuffer hashed = hap.HashData(CryptographicBuffer.ConvertStringToBinary(clientPassword.Password, BinaryStringEncoding.Utf8));
-                Authentication(clientEmail.Text, CryptographicBuffer.EncodeToHexString(hashed).ToUpper());
+                Authentication(clientEmail.Text, getSHA256Hash(clientPassword.Password));
             }
             else
             {
@@ -263,14 +329,14 @@ namespace AbsSecure_V1._2
                             string snew;
                             snew = s.Replace("<br/>", "|");
                             tmpList = snew.Split("|".ToCharArray()).ToList();
-                            if (tmpList[0] == "noAttachment")
+                            if (tmpList[0] == "noAbsMailUID")
                             {
                                 AbsEmailRecord aer = new AbsEmailRecord(tmpList[1], tmpList[2], tmpList[3], tmpList[4], tmpList[5]);
                                 allEmails.Add(aer);
                             }
                             else
                             {
-                                AbsEmailRecord aer = new AbsEmailRecord(tmpList[1], tmpList[2], tmpList[3], tmpList[4], tmpList[5], tmpList[6]);
+                                AbsEmailRecord aer = new AbsEmailRecord(tmpList[1], tmpList[2], tmpList[3], tmpList[4], tmpList[5], tmpList[6], true);
                                 allEmails.Add(aer);
                             }
                         }
@@ -294,22 +360,34 @@ namespace AbsSecure_V1._2
             isAbsSecureEnabled = !isAbsSecureEnabled;
         }
 
-        //ContentDialog Email = new ContentDialog
-        //{
-        //    Title = "Email",
-        //    CloseButtonText = "Close",
-        //    Content = "Sender: abc@companyA.com.org.uk.us\nSubject: Discussion about Project X\n\n\nDear Darren, \n I would like to discuss about just exactly how gay jing jie is, please respond in kind. \n\nRegards,\nFag",
-        //    Width = 1200,
-        //    Height = 1700
-        //};
+        public async void showEmail(string content)
+        {
+            ContentDialog Email = new ContentDialog
+            {
+                Title = "Email",
+                CloseButtonText = "Close",
+                Content = content,
+                Width = 1200,
+                Height = 1700
+            };
+            await Email.ShowAsync();
+        }
 
-        //public async void mail()
-        //{
-        //    await Email.ShowAsync();
-        //}
-        //private void emailView_Tapped(object sender, TappedRoutedEventArgs e)
-        //{
-        //    mail();
-        //}
+        private void emailView_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            if (emailView.SelectedItem != null)
+            {
+                AbsEmailRecord aer = (AbsEmailRecord)emailView.SelectedItem;
+                showEmail(aer.showFullContent());
+            }
+        }
+
+        private string getSHA256Hash(string tbh)
+        {
+            HashAlgorithmProvider hap = HashAlgorithmProvider.OpenAlgorithm(HashAlgorithmNames.Sha256);
+            IBuffer hashed = hap.HashData(CryptographicBuffer.ConvertStringToBinary(tbh, BinaryStringEncoding.Utf8));
+            return CryptographicBuffer.EncodeToHexString(hashed).ToUpper();
+
+        }
     }
 }
