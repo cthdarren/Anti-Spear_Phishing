@@ -273,9 +273,8 @@ namespace AbsSecure_V1._2
                                 AbsEmailRecord aer = new AbsEmailRecord(tmpList[1], tmpList[2], tmpList[3], tmpList[4], tmpList[5], tmpList[6]);
                                 allEmails.Add(aer);
                             }
-                            emailView.ItemsSource = allEmails;
                         }
-                        //emailView.ItemsSource = allEmails;
+                        emailView.ItemsSource = allEmails;
                     }
                     else
                     {
