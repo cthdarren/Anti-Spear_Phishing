@@ -293,5 +293,23 @@ namespace AbsSecure_V1._2
         {
             isAbsSecureEnabled = !isAbsSecureEnabled;
         }
-    }
+
+        //ContentDialog Email = new ContentDialog
+        //{
+        //    Title = "Email",
+        //    CloseButtonText = "Close",
+        //    Content = "Sender: abc@companyA.com.org.uk.us\nSubject: Discussion about Project X\n\n\nDear Darren, \n I would like to discuss about just exactly how gay jing jie is, please respond in kind. \n\nRegards,\nFag",
+        //    Width = 1200,
+        //    Height = 1700
+        //};
+
+        //public async void mail()
+        //{
+        //    await Email.ShowAsync();
+        //}
+        //private void emailView_Tapped(object sender, TappedRoutedEventArgs e)
+        //{
+        //    mail();
+        //}
+}
 }
