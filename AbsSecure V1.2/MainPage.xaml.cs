@@ -18,6 +18,8 @@ using Windows.Security.Cryptography.Core;
 using Windows.Storage.Streams;
 using System.Text;
 using Windows.Web.Http;
+using System.Threading.Tasks;
+using Windows.UI.Core;
 //HEHEHEHHE darrenchanhandsome
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -93,8 +95,7 @@ namespace AbsSecure_V1._2
                         try
                         {
                             var resp = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
-                            displayBox.Text = resp.Content.ToString();
-
+                            //displayBox.Text = resp.Content.ToString();
 
                             if (resp.StatusCode.Equals(HttpStatusCode.BadRequest))
                             {
@@ -107,6 +108,7 @@ namespace AbsSecure_V1._2
                             input["option"] = "2";
                             encodedInput = new HttpFormUrlEncodedContent(input);
                             var resp2 = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
+                            displayBox.Text = resp2.StatusCode.ToString();
                             input["option"] = "3";
                             encodedInput = new HttpFormUrlEncodedContent(input);
                             var resp3 = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
@@ -130,19 +132,35 @@ namespace AbsSecure_V1._2
                         var input = new Dictionary<string, string>
                     {
                     { "senderEmail", senderEmail.Text },
+                    { "senderName", empName },
                     { "recipientEmail", recpEmail.Text },
                     { "subject", emailSubj.Text },
                     { "emailContent", encryptedContent },
                     { "senderEmpID", empID },
                     { "symmKey", mediumObj.AES_Key },
-                    { "emailHash", getSHA256Hash(encryptedContent)},
-                    { "absMailUID", getSHA256Hash(DateTime.Now.ToString()) }
+                    { "emailHash", getSHA256Hash(encryptedContent)}
                     };
 
                         var encodedInput = new HttpFormUrlEncodedContent(input);
                         try
                         {
+                            string absMailUID = getSHA256Hash(DateTime.Now.ToString());
+                            attachmentContent.Text = absMailUID;
+                            emailContent.Text = encryptedContent;
+
+
+                            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+                            {
+                                DisplayDialog("Success!", $"Received AbsUID from Server:\n{absMailUID}\n\n Your email has been encrypted and sent to the recipient!");
+                            });
+   
+                            input.Add("absMailUID", absMailUID);
+                            encodedInput = new HttpFormUrlEncodedContent(input);
                             var resp = await client.PostAsync(new Uri("http://evocreate.tk/sendAbsSecureMail.php"), encodedInput);
+                            //if (resp.StatusCode.Equals(HttpStatusCode.Accepted))
+                            //    DisplayDialog("SUCCESS!", "AbsSecureEmail has been sent!");
+                            //else
+                            //    DisplayDialog("FAILED!", "Failed to send AbsSecureEmail.");
                         }
                         catch (Exception)
                         {
@@ -157,6 +175,7 @@ namespace AbsSecure_V1._2
                         var input = new Dictionary<string, string>
                     {
                     { "senderEmail", senderEmail.Text },
+                    { "senderName", empName },
                     { "recipientEmail", recpEmail.Text },
                     { "subject", emailSubj.Text },
                     { "emailContent", emailContent.Text }
@@ -331,12 +350,12 @@ namespace AbsSecure_V1._2
                             tmpList = snew.Split("|".ToCharArray()).ToList();
                             if (tmpList[0] == "noAbsMailUID")
                             {
-                                AbsEmailRecord aer = new AbsEmailRecord(tmpList[1], tmpList[2], tmpList[3], tmpList[4], tmpList[5]);
+                                AbsEmailRecord aer = new AbsEmailRecord(tmpList[1], tmpList[2], tmpList[3], tmpList[4], tmpList[5], tmpList[6], false);
                                 allEmails.Add(aer);
                             }
                             else
                             {
-                                AbsEmailRecord aer = new AbsEmailRecord(tmpList[1], tmpList[2], tmpList[3], tmpList[4], tmpList[5], tmpList[6], true);
+                                AbsEmailRecord aer = new AbsEmailRecord(tmpList[1], tmpList[2], tmpList[3], tmpList[4], tmpList[5], tmpList[6], true, tmpList[7]);
                                 allEmails.Add(aer);
                             }
                         }
@@ -357,7 +376,7 @@ namespace AbsSecure_V1._2
 
         private void AbsSecureBtn_Checked(object sender, RoutedEventArgs e)
         {
-            isAbsSecureEnabled = !isAbsSecureEnabled;
+            isAbsSecureEnabled = !(isAbsSecureEnabled);
         }
 
         public async void showEmail(string content)
