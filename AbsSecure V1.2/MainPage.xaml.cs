@@ -475,24 +475,17 @@ namespace AbsSecure_V1._2
                     };
 
                 var encodedInput = new HttpFormUrlEncodedContent(input);
-                //try
-                //{
+                try
+                {
                     var resp = await client.PostAsync(new Uri("http://evocreate.tk/receivingEndValidation.php"), encodedInput);
                 string symmKey = resp.Content.ToString();
-                //displayBox.Text = symmKey;
-                //string currentContent = currentEmail.EmailContent;
-                //AesEnDecryption mediumObj = new AesEnDecryption(symmKey);
-                //string check = mediumObj.AES_Key;
-                //byte[] decryptedBytes = mediumObj.Decrypt(Encoding.BigEndianUnicode.GetBytes(currentContent));
-                //string decryptedText = Encoding.BigEndianUnicode.GetString(decryptedBytes);
-
                 currentEmail.EmailContent = Encoding.BigEndianUnicode.GetString(new AesEnDecryption(symmKey).Decrypt(Encoding.BigEndianUnicode.GetBytes(currentEmail.EmailContent)));
                 emailTxtBlock.Text = currentEmail.showFullContent();
-                //}
-                //catch (Exception)
-                //{
-                //    DisplayDialog("Error", "Ensure that you have internet connectivity!");
-                //}
+                }
+                catch (Exception)
+                {
+                    DisplayDialog("Error", "Ensure that you have internet connectivity!");
+                }
             }
         }
     }
