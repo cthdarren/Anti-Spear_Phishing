@@ -127,7 +127,7 @@ namespace AbsSecure_V1._2
                     }
 
                     AesEnDecryption mediumObj = new AesEnDecryption();
-                    string encryptedContent = Encoding.BigEndianUnicode.GetString(mediumObj.Encrypt(Encoding.BigEndianUnicode.GetBytes(emailContent.Text)));
+                    string encryptedContent = Encoding.Unicode.GetString(mediumObj.Encrypt(Encoding.Unicode.GetBytes(emailContent.Text)));
                     using (HttpClient client = new HttpClient())
                     {
                         var input = new Dictionary<string, string>
@@ -346,8 +346,8 @@ namespace AbsSecure_V1._2
                         foreach (string s in emailsList)
                         {
                             string snew;
-                            snew = s.Replace("<br/>", "|");
-                            tmpList = snew.Split("|".ToCharArray()).ToList();
+                            snew = s.Replace("<br/>", "*");
+                            tmpList = snew.Split("*".ToCharArray()).ToList();
                             if (tmpList[0] == "noAbsMailUID")
                             {
                                 AbsEmailRecord aer = new AbsEmailRecord(tmpList[1], tmpList[2], tmpList[3], tmpList[4], tmpList[5], tmpList[6], false);
@@ -404,6 +404,7 @@ namespace AbsSecure_V1._2
                     integCheckBtn.Visibility = Visibility.Visible;
                     decryptBtn.Visibility = Visibility.Visible;
                     emailTxtBlock.Text = aer.showFullContent();
+                    emailContent.Text = currentEmail.EmailContent;
                 }
             }
         }
@@ -469,17 +470,17 @@ namespace AbsSecure_V1._2
                     };
 
                 var encodedInput = new HttpFormUrlEncodedContent(input);
-                try
-                {
+                //try
+                //{
                     var resp = await client.PostAsync(new Uri("http://evocreate.tk/receivingEndValidation.php"), encodedInput);
                 string symmKey = resp.Content.ToString();
-                currentEmail.EmailContent = Encoding.BigEndianUnicode.GetString(new AesEnDecryption(symmKey).Decrypt(Encoding.BigEndianUnicode.GetBytes(currentEmail.EmailContent)));
+                currentEmail.EmailContent = Encoding.Unicode.GetString(new AesEnDecryption(symmKey).Decrypt(Encoding.Unicode.GetBytes(currentEmail.EmailContent)));
                 emailTxtBlock.Text = currentEmail.showFullContent();
-                }
-                catch (Exception)
-                {
-                    DisplayDialog("Error", "Ensure that you have internet connectivity!");
-                }
+                //}
+                //catch (Exception)
+                //{
+                //    DisplayDialog("Error", "Ensure that you have internet connectivity!");
+                //}
             }
         }
 
