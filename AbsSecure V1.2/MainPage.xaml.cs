@@ -401,6 +401,7 @@ namespace AbsSecure_V1._2
                     emailTxtBlock.Visibility = Visibility.Visible;
                     integCheckBtn.Visibility = Visibility.Visible;
                     decryptBtn.Visibility = Visibility.Visible;
+                    changeContentBtn.Visibility = Visibility.Visible;
                     emailTxtBlock.Text = aer.showFullContent();
                     emailContent.Text = currentEmail.EmailContent;
                 }
@@ -417,8 +418,8 @@ namespace AbsSecure_V1._2
                     };
 
                             var encodedInput = new HttpFormUrlEncodedContent(input);
-                            //try
-                            //{
+                            try
+                            {
                                 var resp = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
                                 if (resp.StatusCode.Equals(HttpStatusCode.BadRequest))
                                     goto showEmail;
@@ -449,12 +450,12 @@ namespace AbsSecure_V1._2
 
 
                                 }
-                            //}
-                            //catch (Exception)
-                            //{
-                            //    DisplayDialog("Error!", "Ensure that you have internet connectivity!");
-                            //}
                         }
+                            catch (Exception)
+                        {
+                            DisplayDialog("Error!", "Ensure that you have internet connectivity!");
+                        }
+                    }
                     }
                     showEmail:
                     {
@@ -479,12 +480,14 @@ namespace AbsSecure_V1._2
             emailTxtBlock.Visibility = Visibility.Collapsed;
             integCheckBtn.Visibility = Visibility.Collapsed;
             decryptBtn.Visibility = Visibility.Collapsed;
+            changeContentBtn.Visibility = Visibility.Collapsed;
             HideUnhideEverything(true);
         }
 
         private void changeContentBtn_Click(object sender, RoutedEventArgs e)
         {
             currentEmail.EmailContent = getSHA256Hash(DateTime.Now.ToString());
+            emailTxtBlock.Text = currentEmail.showFullContent();
         }
 
         private async void integCheckBtn_Click(object sender, RoutedEventArgs e)
@@ -525,18 +528,18 @@ namespace AbsSecure_V1._2
                     };
 
                 var encodedInput = new HttpFormUrlEncodedContent(input);
-                //try
-                //{
+                try
+                {
                     var resp = await client.PostAsync(new Uri("http://evocreate.tk/receivingEndValidation.php"), encodedInput);
                 string symmKey = resp.Content.ToString();
                 currentEmail.EmailContent = Encoding.Unicode.GetString(new AesEnDecryption(symmKey).Decrypt(Encoding.Unicode.GetBytes(currentEmail.EmailContent)));
                 emailTxtBlock.Text = currentEmail.showFullContent();
-                //}
-                //catch (Exception)
-                //{
-                //    DisplayDialog("Error", "Ensure that you have internet connectivity!");
-                //}
             }
+                catch (Exception)
+            {
+                DisplayDialog("Error", "Ensure that you have internet connectivity!");
+            }
+        }
         }
 
         private void AbsSecureBtn_Click(object sender, RoutedEventArgs e)
