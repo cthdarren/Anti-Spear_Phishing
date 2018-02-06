@@ -8,11 +8,20 @@ namespace AbsSecure_V1._2
 {
     class AbsEmailRecord
     {
-        private string senderEmail;
         private string senderName;
         private string recipientEmail;
         private string subject;
         private string dateTimeLog;
+
+
+        private string senderEmail;
+
+        public string SenderEmail
+        {
+            get { return senderEmail; }
+            set { senderEmail = value; }
+        }
+
 
 
         private string absUID;

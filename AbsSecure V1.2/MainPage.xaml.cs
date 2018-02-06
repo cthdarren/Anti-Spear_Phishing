@@ -388,14 +388,12 @@ namespace AbsSecure_V1._2
             await Email.ShowAsync();
         }
 
-        private void emailView_Tapped(object sender, TappedRoutedEventArgs e)
+        private async void emailView_Tapped(object sender, TappedRoutedEventArgs e)
         {
             if (emailView.SelectedItem != null)
             {
                 AbsEmailRecord aer = (AbsEmailRecord)emailView.SelectedItem;
-                if (!(aer.IsAbsSecureVerified))
-                    showEmail(aer.showFullContent());
-                else
+                if (aer.IsAbsSecureVerified)
                 {
                     currentEmail = aer;
                     HideUnhideEverything(false);
@@ -405,6 +403,63 @@ namespace AbsSecure_V1._2
                     decryptBtn.Visibility = Visibility.Visible;
                     emailTxtBlock.Text = aer.showFullContent();
                     emailContent.Text = currentEmail.EmailContent;
+                }
+                else
+                {
+                    if (isAbsSecureEnabled)
+                    {
+                        using (HttpClient client = new HttpClient())
+                        {
+                            var input = new Dictionary<string, string>
+                    {
+                    { "option", "4" },
+                    { "senderEmail", aer.SenderEmail},
+                    };
+
+                            var encodedInput = new HttpFormUrlEncodedContent(input);
+                            //try
+                            //{
+                                var resp = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
+                                if (resp.StatusCode.Equals(HttpStatusCode.BadRequest))
+                                    goto showEmail;
+                                else
+                                {
+                                    input["option"] = "5";
+                                    encodedInput = new HttpFormUrlEncodedContent(input);
+                                    resp = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
+                                    string supposedSenderCompany = resp.Content.ToString();
+                                    displayBox.Text = supposedSenderCompany;
+                                    input.Add("senderCompanyID", supposedSenderCompany);
+                                    input.Add("recipCompanyID", companyID);
+
+                                    input["option"] = "2";
+                                    encodedInput = new HttpFormUrlEncodedContent(input);
+                                    var resp2 = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
+                                    input["option"] = "3";
+                                    encodedInput = new HttpFormUrlEncodedContent(input);
+                                    var resp3 = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
+
+                                    if (!(resp2.StatusCode.Equals(HttpStatusCode.Accepted)) && !(resp3.StatusCode.Equals(HttpStatusCode.Accepted)))
+                                        goto showEmail;
+                                    else
+                                    {
+                                        DisplayDialog("Alert!", "The sender of this email has spoofed his address to one that is trusted by your corporation, delete this email immediately!");
+                                        return;
+                                    }
+
+
+                                }
+                            //}
+                            //catch (Exception)
+                            //{
+                            //    DisplayDialog("Error!", "Ensure that you have internet connectivity!");
+                            //}
+                        }
+                    }
+                    showEmail:
+                    {
+                        showEmail(aer.showFullContent());
+                    }
                 }
             }
         }
