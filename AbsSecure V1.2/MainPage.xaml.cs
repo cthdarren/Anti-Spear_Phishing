@@ -147,7 +147,6 @@ namespace AbsSecure_V1._2
                         {
                             string absMailUID = getSHA256Hash(DateTime.Now.ToString());
                             attachmentContent.Text = absMailUID;
-                            emailContent.Text = encryptedContent;
 
 
                             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
@@ -330,8 +329,8 @@ namespace AbsSecure_V1._2
                     };
 
                 var encodedInput = new HttpFormUrlEncodedContent(input);
-                try
-                {
+                //try
+                //{
                     List<string> tmpList;
                     var resp = await client.PostAsync(new Uri("http://evocreate.tk/retrieveMail.php"), encodedInput);
                     if (resp.StatusCode.Equals(HttpStatusCode.NotFound))
@@ -340,14 +339,14 @@ namespace AbsSecure_V1._2
                     {
                         allEmails = new List<AbsEmailRecord>();
                         string respString = resp.Content.ToString();
-                        respString = respString.Replace("<hr/>", "|");
+                        respString = respString.Replace("<hr/>", "{");
                         respString = respString.Substring(1, respString.Count() - 1);
-                        List<string> emailsList = respString.Split('|').ToList();
+                        List<string> emailsList = respString.Split('{').ToList();
                         foreach (string s in emailsList)
                         {
                             string snew;
-                            snew = s.Replace("<br/>", "*");
-                            tmpList = snew.Split("*".ToCharArray()).ToList();
+                            snew = s.Replace("<br/>", "{");
+                            tmpList = snew.Split("{".ToCharArray()).ToList();
                             if (tmpList[0] == "noAbsMailUID")
                             {
                                 AbsEmailRecord aer = new AbsEmailRecord(tmpList[1], tmpList[2], tmpList[3], tmpList[4], tmpList[5], tmpList[6], false);
@@ -366,11 +365,11 @@ namespace AbsSecure_V1._2
                         DisplayDialog("Error!", "Request timed out!");
                     }
 
-                }
-                catch (Exception)
-                {
-                    DisplayDialog("Error!", "Ensure that you have internet connectivity!");
-                }
+                //}
+                //catch (Exception)
+                //{
+                //    DisplayDialog("Error!", "Ensure that you have internet connectivity!");
+                //}
             }
         }
 
@@ -429,7 +428,7 @@ namespace AbsSecure_V1._2
                                     encodedInput = new HttpFormUrlEncodedContent(input);
                                     resp = await client.PostAsync(new Uri("http://evocreate.tk/checkAffiliation.php"), encodedInput);
                                     string supposedSenderCompany = resp.Content.ToString();
-                                    displayBox.Text = supposedSenderCompany;
+                                    //displayBox.Text = supposedSenderCompany;
                                     input.Add("senderCompanyID", supposedSenderCompany);
                                     input.Add("recipCompanyID", companyID);
 
@@ -545,6 +544,14 @@ namespace AbsSecure_V1._2
         private void AbsSecureBtn_Click(object sender, RoutedEventArgs e)
         {
             isAbsSecureEnabled = !isAbsSecureEnabled;
+        }
+
+        private void emailContent_KeyUp(object sender, KeyRoutedEventArgs e)
+        {
+            if (e.Key.ToString() == "Enter")
+            {
+                emailContent.Text = emailContent.Text.Substring(0, emailContent.Text.Length - 2);
+            }
         }
     }
 }
