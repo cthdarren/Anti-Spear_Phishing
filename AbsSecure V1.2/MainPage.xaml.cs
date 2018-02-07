@@ -550,7 +550,7 @@ namespace AbsSecure_V1._2
         {
             if (e.Key.ToString() == "Enter")
             {
-                emailContent.Text = emailContent.Text.Substring(0, emailContent.Text.Length - 2);
+                emailContent.Text = emailContent.Text.Substring(0, emailContent.Text.Length - 1);
             }
         }
     }
