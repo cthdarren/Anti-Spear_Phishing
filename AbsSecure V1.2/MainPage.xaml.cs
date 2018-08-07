@@ -553,5 +553,11 @@ namespace AbsSecure_V1._2
                 emailContent.Text = emailContent.Text.Substring(0, emailContent.Text.Length - 1);
             }
         }
+
+        private void forwardEmail(){
+
+
+
+        }
     }
 }
